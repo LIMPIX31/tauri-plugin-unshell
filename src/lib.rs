@@ -78,9 +78,9 @@ pub fn init<R: Runtime>() -> TauriPlugin<R, Option<Config>> {
             commands::kill,
             commands::open
         ])
-        .setup(|app, api| {
+        .setup(|app| {
             let default_config = Config::default();
-            let config = api.config().as_ref().unwrap_or(&default_config);
+            let config = &default_config;
             app.manage(Shell {
                 app: app.clone(),
                 children: Default::default(),

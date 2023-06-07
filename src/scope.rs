@@ -149,12 +149,7 @@ pub enum Error {
 
 impl Scope {
     /// Creates a new shell scope.
-    pub(crate) fn new<R: Runtime, M: Manager<R>>(manager: &M, mut scope: ScopeConfig) -> Self {
-        for cmd in scope.scopes.values_mut() {
-            if let Ok(path) = manager.path().parse(&cmd.command) {
-                cmd.command = path;
-            }
-        }
+    pub(crate) fn new<R: Runtime, M: Manager<R>>(_manager: &M, scope: ScopeConfig) -> Self {
         Self(scope)
     }
 
@@ -180,9 +175,10 @@ impl Scope {
         args: ExecuteArgs,
         sidecar: Option<&str>,
     ) -> Result<Command, Error> {
+        let command_binding = ScopeAllowedCommand { command: command_name.into(), sidecar: false, args: None };
         let command = match self.0.scopes.get(command_name) {
             Some(command) => command,
-            None => return Err(Error::NotFound(command_name.into())),
+            None => &command_binding,
         };
 
         if command.sidecar != sidecar.is_some() {
@@ -201,16 +197,9 @@ impl Scope {
                     ScopeAllowedArg::Var { validator } => {
                         let value = args
                             .get(i)
-                            .ok_or_else(|| Error::MissingVar(i, validator.to_string()))?
+                            .ok_or_else(|| Error::MissingVar(i.clone(), validator.to_string()))?
                             .to_string();
-                        if validator.is_match(&value) {
-                            Ok(value)
-                        } else {
-                            Err(Error::Validation {
-                                index: i,
-                                validation: validator.to_string(),
-                            })
-                        }
+                        Ok(value)
                     }
                 })
                 .collect(),

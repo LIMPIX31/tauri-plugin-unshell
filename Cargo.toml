@@ -1,17 +1,17 @@
 [package]
-name = "tauri-plugin-shell"
+name = "tauri-plugin-unshell"
 version = "2.0.0-alpha.0"
 description = "Access the system shell. Allows you to spawn child processes and manage files and URLs using their default application."
-edition = { workspace = true }
-authors = { workspace = true }
-license = { workspace = true }
+edition = "2021"
+authors = [ "LIMPIX31" ]
+license = "Apache-2.0 OR MIT"
 
 [dependencies]
-serde = { workspace = true }
-serde_json = { workspace = true }
-tauri = { workspace = true }
-log = { workspace = true }
-thiserror = { workspace = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = "1"
+log = "0.4"
+thiserror = "1"
 shared_child = "1"
 regex = "1"
 open = "4"
